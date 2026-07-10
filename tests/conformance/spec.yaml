@@ -203,6 +203,35 @@ invocation_contract:
       - README.md
       - INSTALL.md
       - skills/para-help/SKILL.md
+    rows:
+      - client: openai-codex
+        label: OpenAI Codex
+        value_client: openai-codex
+        value_field: user_form
+      - client: cursor
+        label: Cursor
+        value_client: cursor
+        value_field: user_form
+      - client: pi-enabled
+        label: 'Pi, skill commands enabled'
+        value_client: pi
+        value_field: user_form
+      - client: pi-disabled
+        label: 'Pi, skill commands disabled'
+        value_client: pi
+        value_field: fallback
+      - client: opencode
+        label: OpenCode
+        value_client: opencode
+        value_field: user_form
+      - client: gemini-cli
+        label: Gemini CLI
+        value_client: gemini-cli
+        value_field: user_form
+      - client: unknown
+        label: Unknown client
+        value_client: unknown
+        value_field: user_form
   portable_scopes:
     skill:
       paths:
@@ -252,6 +281,10 @@ invocation_contract:
       - "/tmp/para-plan/SKILL.md"
       - "docs/para-plan/example.md"
       - 'prefix_$para-plan_suffix'
+      - '$para-<name>'
+      - '/para-<skill>'
+      - '/skill:para-command'
+      - '/skill:para-*'
 
 validation:
   test_suite: tests/conformance/

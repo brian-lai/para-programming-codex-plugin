@@ -52,4 +52,13 @@ if ! jq -e '.plugins[] | select(.name == "para-programming")' "$tmp_home/.agents
   exit 1
 fi
 
+reinstall_output="$(HOME="$tmp_home" bash "$REPO_ROOT/scripts/install.sh")"
+if echo "$reinstall_output" | grep -Fq 'Use the para-init skill to initialize PARA in a project.' &&
+   echo "$reinstall_output" | grep -Fq 'Use /skills to browse installed skills.'; then
+  echo "PASS idempotent install output preserves portable guidance"
+else
+  echo "FAIL idempotent install output missing portable guidance"
+  exit 1
+fi
+
 echo "PASS install script installs Codex skills and support files"

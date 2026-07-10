@@ -19,9 +19,9 @@ This document demonstrates a complete phased plan workflow from start to finish.
 
 ## Phase 1: Plan Creation
 
-### Command
+### Skill Request
 
-```bash
+```text
 para-plan implement-user-authentication
 ```
 
@@ -200,9 +200,9 @@ User reviews all 4 plan files (master + 3 phases) and approves the approach.
 
 ## Phase 3: Execute Phase 1
 
-### Command
+### Skill Request
 
-```bash
+```text
 para-execute --phase=1
 ```
 
@@ -299,9 +299,9 @@ The agent (or user) works through the to-dos:
 
 ## Phase 4: Summarize Phase 1
 
-### Command
+### Skill Request
 
-```bash
+```text
 para-summarize --phase=1
 ```
 
@@ -403,9 +403,9 @@ gh pr create --title "feat: User auth - Phase 1 (Database Schema)" \
 
 ## Phase 6: Execute Phase 2
 
-### Command
+### Skill Request
 
-```bash
+```text
 para-execute --phase=2
 ```
 
@@ -434,7 +434,7 @@ Same process for frontend integration.
 
 After all phases are complete and merged:
 
-```bash
+```text
 para-archive
 ```
 

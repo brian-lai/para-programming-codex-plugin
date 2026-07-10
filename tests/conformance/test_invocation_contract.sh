@@ -17,9 +17,10 @@ else
 fi
 
 names="$(yq -r '.skills_to_deliver[]' "$SPEC" | paste -sd'|' -)"
-body="((${names})|para-(<skill>|<name>|\*|command))"
+concrete="(${names})"
 dollar='\$'
-selector_regex="(^|[^[:alnum:]_./:-])(${dollar}${body}|/${body}|/skill:${body})($|[^[:alnum:]_./-])"
+selector_forms="(${dollar}${concrete}|/${concrete}|/skill:${concrete}|${dollar}para-<skill>|/para-<name>|/skill:para-<skill>|${dollar}para-\*|${dollar}para-command)"
+selector_regex="(^|[^[:alnum:]_./:-])${selector_forms}($|[^[:alnum:]_./-])"
 
 fixtures_ok=1
 while IFS= read -r fixture; do
@@ -96,13 +97,15 @@ while IFS= read -r rel; do
   block="$(awk -v start="$start" -v end="$end" '$0 == start {inside=1; next} $0 == end {inside=0; exit} inside' "$file")"
   outside="$(awk -v start="$start" -v end="$end" '$0 == start {inside=1; next} $0 == end {inside=0; next} !inside' "$file")"
 
-  for client in openai-codex cursor pi opencode gemini-cli unknown; do
-    expected="$(yq -r ".invocation_contract.rendering_policy.clients.\"${client}\".user_form" "$SPEC")"
-    if ! printf '%s\n' "$block" | grep -Fq "$expected"; then
-      echo "FAIL $rel mapping missing $client form: $expected"
+  while IFS=$'\t' read -r client label value_client value_field; do
+    expected="$(yq -r ".invocation_contract.rendering_policy.clients[\"${value_client}\"].${value_field}" "$SPEC")"
+    row_count="$(printf '%s\n' "$block" | awk -F'|' -v label="$label" '{cell=$2; gsub(/^[[:space:]]+|[[:space:]]+$/, "", cell); if (cell == label) count++} END {print count+0}')"
+    row_value="$(printf '%s\n' "$block" | awk -F'|' -v label="$label" '{cell=$2; gsub(/^[[:space:]]+|[[:space:]]+$/, "", cell); if (cell == label) {value=$3; gsub(/^[[:space:]]+|[[:space:]]+$/, "", value); print value}}')"
+    if [ "$row_count" -ne 1 ] || ! printf '%s\n' "$row_value" | grep -Fq "$expected"; then
+      echo "FAIL $rel mapping row $label does not match $client value: $expected"
       mapping_ok=0
     fi
-  done
+  done < <(yq -r '.invocation_contract.mapping_surfaces.rows[] | [.client, .label, .value_client, .value_field] | @tsv' "$SPEC")
 
   if printf '%s\n' "$outside" | grep -Eq "$selector_regex"; then
     echo "FAIL $rel contains PARA invocation selector outside mapping block"

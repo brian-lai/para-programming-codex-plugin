@@ -30,11 +30,11 @@ Create a phased plan when ANY of these apply:
 
 ---
 
-## Command Comparison
+## Skill Request Comparison
 
 ### Simple Plan
 
-| Step | Command | Output |
+| Step | Skill Request | Output |
 |------|---------|--------|
 | Plan | `para-plan task-name` | `context/plans/YYYY-MM-DD-task-name.md` |
 | Execute | `para-execute` | Worktree: `.para-worktrees/task-name`, Branch: `para/task-name` |
@@ -43,7 +43,7 @@ Create a phased plan when ANY of these apply:
 
 ### Phased Plan
 
-| Step | Command | Output |
+| Step | Skill Request | Output |
 |------|---------|--------|
 | Plan | `para-plan task-name` | Master + N phase plans |
 | Review | (Manual) | Review all phases |

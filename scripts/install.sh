@@ -26,6 +26,13 @@ MARKETPLACE_FILE="$MARKETPLACE_DIR/marketplace.json"
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DRY_RUN=0
 
+show_completion_guidance() {
+    echo ""
+    echo "Restart your client to load the skills."
+    echo "Use the para-init skill to initialize PARA in a project."
+    echo "Use /skills to browse installed skills."
+}
+
 for arg in "$@"; do
     case "$arg" in
         --dry-run)
@@ -132,6 +139,7 @@ fi
 if jq -e ".plugins[] | select(.name == \"$PLUGIN_NAME\")" "$MARKETPLACE_FILE" > /dev/null 2>&1; then
     echo "Plugin '$PLUGIN_NAME' is already registered in $MARKETPLACE_FILE"
     echo "Direct Codex skills were refreshed."
+    show_completion_guidance
     exit 0
 fi
 
@@ -159,7 +167,4 @@ echo "Done! PARA skills installed at: $AGENTS_SKILLS_DIR"
 echo "Compatibility mirror installed at: $CODEX_SKILLS_DIR"
 echo "Plugin registered at: $MARKETPLACE_FILE"
 echo "Plugin source: $PLUGIN_DIR"
-echo ""
-echo "Restart your client to load the skills."
-echo "Use the para-init skill to initialize PARA in a project."
-echo "Use /skills to browse installed skills."
+show_completion_guidance
