@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if grep -Fq '$para-plan' skills/para-check/SKILL.md; then
-  echo "PASS \$para-plan recommendation present"
+if grep -Fq 'Use the `para-plan` skill' skills/para-check/SKILL.md; then
+  echo "PASS para-plan semantic handoff"
 else
-  echo "FAIL missing \$para-plan recommendation"
+  echo "FAIL missing para-plan semantic handoff"
   exit 1
 fi
