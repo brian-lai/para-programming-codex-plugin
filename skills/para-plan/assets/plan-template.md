@@ -141,4 +141,4 @@
 
 ---
 
-**Next Step:** Please review this plan. When you're ready, run `$para-execute` to begin implementation.
+**Next Step:** Please review this plan. When you're ready, use the `para-execute` skill to begin implementation.

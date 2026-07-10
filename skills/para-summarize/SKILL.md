@@ -10,8 +10,8 @@ Generate a summary document from the current work session. Supports both simple 
 ## Usage
 
 ```
-$para-summarize                   # Auto-detect active plan/phase
-$para-summarize --phase=N         # Summarize specific phase
+para-summarize                   # Auto-detect active plan/phase
+para-summarize --phase=N         # Summarize specific phase
 ```
 
 ## What It Does
@@ -49,12 +49,12 @@ $para-summarize --phase=N         # Summarize specific phase
 
 ### Standalone Mode
 
-If `$para-summarize` was run standalone, not as part of `$para-workflow`, the next steps are:
+If the `para-summarize` skill was used standalone, not as part of the `para-workflow` skill, the next steps are:
 
 1. Push the branch: `git -C {worktree_path} push -u origin para/{task-name}`
 2. Create a PR: `gh pr create` from the worktree branch
-3. Run `$para-archive` to clean up the worktree and archive context
+3. Use the `para-archive` skill to clean up the worktree and archive context
 
 ### Orchestrated Mode
 
-If `$para-summarize` was invoked as Step 4 of $para-workflow, the PR was already created in Step 2 of the workflow. Skip the manual push/PR instructions above and return control to `$para-workflow` for merge and archive handling.
+If `para-summarize` was invoked as Step 4 of the `para-workflow` skill, the PR was already created in Step 2 of the workflow. Skip the manual push/PR instructions above and return control to the `para-workflow` skill for merge and archive handling.
