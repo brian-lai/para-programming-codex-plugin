@@ -21,6 +21,7 @@ Determine how to render user-facing skill requests before displaying the referen
 2. Do not infer the host from ~/.agents/skills or another shared discovery path.
 3. For an unknown client, OpenCode, or Gemini CLI, use exact-name natural language such as: Use the `para-plan` skill to plan `<task>`.
 4. Treat the forms below as presentation only. The canonical request remains `para-<skill> [arguments]`.
+5. Preserve the exact `para-*` identifier on every line. Do not replace identifiers with generic labels such as “the plan review skill” or reorder/expand the Typical Flow.
 
 <!-- para-client-invocation-map:start -->
 | Client | User-facing form |
@@ -35,6 +36,19 @@ Determine how to render user-facing skill requests before displaying the referen
 <!-- para-client-invocation-map:end -->
 
 Display the reference below. Keep the skill identifiers canonical. In the Typical Flow, render each request using the selected client form; when using natural language, include both the exact skill name and its intent/arguments.
+
+For natural-language clients, render the Typical Flow with this exact request sequence:
+
+```text
+Use the `para-research` skill to research "Add user authentication".
+Use the `para-plan` skill to plan "Add user authentication".
+Use the `para-review` skill with `--plan`.
+Use the `para-workflow` skill. Or manually:
+  Use the `para-execute` skill.
+  Use the `para-review` skill with `--pr`.
+  Use the `para-summarize` skill.
+  Use the `para-archive` skill.
+```
 
 ---
 

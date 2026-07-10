@@ -13,6 +13,26 @@ This repository is a portable Agent Skills package. The canonical skill payload 
 | Cursor | Yes | Cursor discovers Agent Skills from shared `.agents/skills` locations and Cursor-specific `.cursor/skills` locations; the installer writes the shared global path. |
 | Claude Code | No | Use the original Claude plugin instead: `https://github.com/brian-lai/para-programming-plugin`. |
 
+## Client Invocation
+
+The canonical request form is `para-<skill> [arguments]`. Use exact-name natural language whenever the host is unknown or does not expose a user-entered selector.
+
+<!-- para-client-invocation-map:start -->
+| Client | User-facing form |
+|---|---|
+| OpenAI Codex | `$para-<skill> [arguments]` |
+| Cursor | `/para-<skill> [arguments]` |
+| Pi, skill commands enabled | `/skill:para-<skill> [arguments]` |
+| Pi, skill commands disabled | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+| OpenCode | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+| Gemini CLI | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+| Unknown client | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+<!-- para-client-invocation-map:end -->
+
+## Management and discovery
+
+Client skill managers and debug commands verify installation, list skills, or change enablement. They are not portable workflow invocation syntax.
+
 ## Claude Code
 
 Claude users should use the original PARA-Programming Claude plugin:
@@ -39,11 +59,7 @@ Codex reads local user skills from `~/.agents/skills`. The installer copies this
    ~/.codex/plugins/para-programming/scripts/install.sh
    ```
 
-3. Restart Codex and mention the skill, or run `/skills` and select it:
-
-   ```text
-   $para-init
-   ```
+3. Restart Codex and use the `para-init` skill. The client invocation mapping above shows Codex's explicit form.
 
 Preview the Codex install without writes:
 
@@ -77,11 +93,7 @@ Pi discovers user skills from `~/.agents/skills`, so the Codex installer provide
    ./scripts/install.sh
    ```
 
-2. In Pi, verify skill discovery. If Pi skill commands are enabled, skills can be invoked as:
-
-   ```text
-   /skill:para-init
-   ```
+2. In Pi, verify skill discovery. Use the `para-init` skill; Pi may use its explicit selector when skill commands are enabled and natural language when they are disabled.
 
 ## OpenCode
 
@@ -107,11 +119,7 @@ Cursor supports Agent Skills in the editor and CLI. The installer writes the sha
    ./scripts/install.sh
    ```
 
-2. Restart Cursor. Skills can be auto-selected by the agent or invoked from the slash command menu, for example:
-
-   ```text
-   /para-init
-   ```
+2. Restart Cursor. Skills can be auto-selected by the agent or chosen from its skill menu. Use the `para-init` skill to verify the workflow.
 
 3. If your Cursor version does not discover the shared global path, mirror the installed skills into Cursor's user-level skill directory:
 
@@ -125,9 +133,9 @@ Cursor supports Agent Skills in the editor and CLI. The installer writes the sha
 Before publishing or cutting a release, verify these flows manually:
 
 - Claude Code: users are directed to `https://github.com/brian-lai/para-programming-plugin`.
-- OpenAI Codex: `scripts/install.sh` installs `para-*` skills into `~/.agents/skills`, and `$para-init` is selectable via `/skills` or direct `$para-init` mention.
+- OpenAI Codex: `scripts/install.sh` installs `para-*` skills into `~/.agents/skills`, and the `para-init` skill is available to the agent and skill picker.
 - Gemini CLI: `gemini skills list --all` discovers the installed `para-*` skills from `~/.agents/skills`.
-- Pi: Pi discovers the installed `para-*` skills from `~/.agents/skills`; `/skill:para-init` works when skill commands are enabled.
+- Pi: Pi discovers the installed `para-*` skills from `~/.agents/skills`; verify both commands-enabled and commands-disabled behavior.
 - OpenCode: OpenCode discovers installed `para-*` skills from `~/.agents/skills` and exposes them through its native `skill` tool.
 - Cursor: Cursor discovers installed `para-*` skills from the shared `~/.agents/skills` path or from a fallback `~/.cursor/skills` mirror, and exposes them through the slash command menu.
 - Single-skill installs: any skill that references a sibling skill includes a graceful fallback phrase.
