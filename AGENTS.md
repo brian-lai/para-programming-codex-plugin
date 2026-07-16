@@ -39,7 +39,7 @@ para-programming-codex-plugin/
 ## Conventions
 
 - All context files use `YYYY-MM-DD-` date prefixes for chronological sorting
-- Skills follow `/para-<name>` hyphenated naming pattern
+- Skills use the `para-<name>` hyphenated naming pattern
 - Markdown is used for all documentation and context files
 - AGENTS.md used instead of CLAUDE.md (Codex-native convention)
 
@@ -50,12 +50,9 @@ para-programming-codex-plugin/
 # Copy examples/marketplace-entry.json to ~/.agents/plugins/marketplace.json
 # Restart Codex
 
-# Initialize PARA structure in a project:
-/para-init
+# Initialize PARA structure in a project with the para-init skill
 
-# Create a plan:
-/para-plan <task-description>
+# Create a plan with the para-plan skill and a task description
 
-# Check workflow status:
-/para-status
+# Check workflow status with the para-status skill
 ```

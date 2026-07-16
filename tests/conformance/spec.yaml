@@ -107,7 +107,8 @@ client_discovery:
         skills_pointer: "./skills/"
         marketplace_registration: "examples/marketplace-entry.json"
     invocation:
-      primary: "${skill-name} or /skills picker"
+      primary: "$para-<skill> [arguments]"
+      management_or_discovery: "/skills"
       autonomous: true
 
   - client: opencode
@@ -117,7 +118,8 @@ client_discovery:
       - type: legacy
         target: "<project>/.claude/skills/"
     invocation:
-      primary: "skill tool call: skill({ name: ... })"
+      primary: "natural-language"
+      agent_internal: "skill({ name: \"para-<skill>\" })"
       autonomous: true
     permission_config: "opencode.json { permission: { skill: { ... } } }"
 
@@ -128,7 +130,7 @@ client_discovery:
       - type: legacy
         target: ".claude/skills/, .codex/skills/"
     invocation:
-      primary: "/{skill-name} in chat"
+      primary: "/para-<skill> [arguments]"
       autonomous: true
     slash_only_flag: "disable-model-invocation: true"
 
@@ -137,7 +139,19 @@ client_discovery:
       - type: raw-skill-copy
         target: "<project>/.gemini/skills/ or .agents/skills/ or ~/.gemini/skills/"
     invocation:
-      primary: "/skills list | /skills enable | /skills disable"
+      primary: "natural-language"
+      agent_internal: "activate_skill(name=\"para-<skill>\")"
+      management_or_discovery: "/skills"
+      autonomous: true
+
+  - client: pi
+    installation_methods:
+      - type: raw-skill-copy
+        target: "<project>/.agents/skills/ or ~/.agents/skills/ or ~/.pi/agent/skills/"
+    invocation:
+      primary: "/skill:para-<skill> [arguments]"
+      condition: "skill commands enabled"
+      fallback: "natural-language"
       autonomous: true
 
 skills_to_deliver:
@@ -153,6 +167,124 @@ skills_to_deliver:
   - para-status
   - para-summarize
   - para-workflow
+
+invocation_contract:
+  canonical_request:
+    display_pattern: "para-<skill> [arguments]"
+    natural_language_template: "Use the `<skill-name>` skill <intent-and-arguments>."
+  rendering_policy:
+    known_client_condition: "Render a selector only when the host is explicit in runtime/system context or named by the user."
+    forbidden_detection: "Do not infer the host from ~/.agents/skills or another discovery path."
+    unknown_client_fallback: "natural-language"
+    clients:
+      openai-codex:
+        user_form: "$para-<skill> [arguments]"
+        management_or_discovery: "/skills"
+      cursor:
+        user_form: "/para-<skill> [arguments]"
+      pi:
+        user_form: "/skill:para-<skill> [arguments]"
+        fallback: "natural-language"
+      opencode:
+        user_form: "natural-language"
+        agent_internal: "skill({ name: \"para-<skill>\" })"
+        expose_agent_tool_syntax_to_user: false
+      gemini-cli:
+        user_form: "natural-language"
+        agent_internal: "activate_skill(name=\"para-<skill>\")"
+        management_or_discovery: "/skills"
+        expose_agent_tool_syntax_to_user: false
+      unknown:
+        user_form: "natural-language"
+  mapping_surfaces:
+    block_start: "<!-- para-client-invocation-map:start -->"
+    block_end: "<!-- para-client-invocation-map:end -->"
+    paths:
+      - README.md
+      - INSTALL.md
+      - skills/para-help/SKILL.md
+    rows:
+      - client: openai-codex
+        label: OpenAI Codex
+        value_client: openai-codex
+        value_field: user_form
+      - client: cursor
+        label: Cursor
+        value_client: cursor
+        value_field: user_form
+      - client: pi-enabled
+        label: 'Pi, skill commands enabled'
+        value_client: pi
+        value_field: user_form
+      - client: pi-disabled
+        label: 'Pi, skill commands disabled'
+        value_client: pi
+        value_field: fallback
+      - client: opencode
+        label: OpenCode
+        value_client: opencode
+        value_field: user_form
+      - client: gemini-cli
+        label: Gemini CLI
+        value_client: gemini-cli
+        value_field: user_form
+      - client: unknown
+        label: Unknown client
+        value_client: unknown
+        value_field: user_form
+  portable_scopes:
+    skill:
+      paths:
+        - skills/para-archive/SKILL.md
+        - skills/para-check/SKILL.md
+        - skills/para-execute/SKILL.md
+        - skills/para-init/SKILL.md
+        - skills/para-plan/SKILL.md
+        - skills/para-research/SKILL.md
+        - skills/para-review/SKILL.md
+        - skills/para-status/SKILL.md
+        - skills/para-summarize/SKILL.md
+        - skills/para-workflow/SKILL.md
+        - skills/para-*/assets/*.md
+        - skills/para-*/references/*.md
+        - scripts/install.sh
+    documentation:
+      paths:
+        - AGENTS.md
+        - resources/AGENTS.md
+        - docs/METHODOLOGY.md
+        - docs/phased-plan-example.md
+        - docs/phased-plans-quick-reference.md
+        - examples/example-workflow.md
+  historical_paths:
+    - CHANGELOG.md
+    - docs/PHASED-PLANS-CHANGELOG.md
+  selector_lexer:
+    concrete_names_source: skills_to_deliver
+    generic_suffixes: ["<skill>", "<name>", "*", "command"]
+    underscore_policy: "Adjacent underscores are identifier continuations, not emphasis boundaries."
+    positive_fixtures:
+      - "$para-plan <task>"
+      - "/para-plan <task>"
+      - "/skill:para-plan <task>"
+      - "**$para-plan**"
+      - "Use $para-plan!"
+      - "~~/para-plan~~"
+      - "$para-<skill>"
+      - "/para-<name>"
+      - "/skill:para-<skill>"
+      - "$para-*"
+      - "$para-command"
+    negative_fixtures:
+      - "../para-init/references/context-schema.md"
+      - "https://github.com/brian-lai/para-programming-agent-skills"
+      - "/tmp/para-plan/SKILL.md"
+      - "docs/para-plan/example.md"
+      - 'prefix_$para-plan_suffix'
+      - '$para-<name>'
+      - '/para-<skill>'
+      - '/skill:para-command'
+      - '/skill:para-*'
 
 validation:
   test_suite: tests/conformance/
@@ -221,35 +353,35 @@ cross_skill_references:
       to: ../../docs/METHODOLOGY.md
       reason: "human-readable methodology reference"
   cross_skill_invocations:
-    # Orchestration references: a SKILL.md that names $para-<other> as a FLOW STEP (not just a table entry)
+    # Orchestration references use canonical bare skill identifiers.
     # must include graceful-degradation fallback. Phase-7 E2E single-skill-copy test verifies this.
     - skill: skills/para-workflow/SKILL.md
-      invokes: ["$para-execute", "$para-review", "$para-summarize", "$para-archive"]
+      invokes: ["para-execute", "para-review", "para-summarize", "para-archive"]
       kind: flow-step
     - skill: skills/para-summarize/SKILL.md
-      invokes: ["$para-archive"]
+      invokes: ["para-archive"]
       kind: flow-step
     - skill: skills/para-plan/SKILL.md
-      invokes: ["$para-research", "$para-execute", "$para-review"]
+      invokes: ["para-research", "para-execute", "para-review"]
       kind: flow-step
     - skill: skills/para-research/SKILL.md
-      invokes: ["$para-plan"]
+      invokes: ["para-plan"]
       kind: flow-step
     - skill: skills/para-check/SKILL.md
-      invokes: ["$para-plan"]
+      invokes: ["para-plan"]
       kind: flow-step
     - skill: skills/para-init/SKILL.md
-      invokes: ["$para-plan"]
+      invokes: ["para-plan"]
       kind: flow-step
 
     # Informational references: skills that list or mention other skills for user guidance,
     # not as executable flow steps. No fallback-comment requirement since the user, not the skill,
     # decides whether to invoke.
     - skill: skills/para-help/SKILL.md
-      invokes: ["$para-init", "$para-research", "$para-plan", "$para-review", "$para-execute", "$para-workflow", "$para-summarize", "$para-archive", "$para-status", "$para-check", "$para-help"]
+      invokes: ["para-init", "para-research", "para-plan", "para-review", "para-execute", "para-workflow", "para-summarize", "para-archive", "para-status", "para-check", "para-help"]
       kind: informational
     - skill: skills/para-status/SKILL.md
-      invokes: ["$para-init", "$para-plan", "$para-execute", "$para-summarize", "$para-archive"]
+      invokes: ["para-init", "para-plan", "para-execute", "para-summarize", "para-archive"]
       kind: informational
 
 canonical_phrases:
@@ -263,7 +395,7 @@ canonical_phrases:
     - "2 or more architectural layers"
     - "merged to `main`"
   workflow_owns_pr: "This step owns PR creation for workflow runs"
-  summarize_orchestrated_handoff: "invoked as Step 4 of $para-workflow"
+  summarize_orchestrated_handoff: "invoked as Step 4 of the para-workflow skill"
   archive_no_force_remove: "do NOT force-remove"
   workflow_diagram: "Research → Plan → Review"
   empty_initial_commit: "empty commit"

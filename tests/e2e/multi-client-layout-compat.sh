@@ -7,12 +7,13 @@ cd "$REPO_ROOT"
 clients=(
   ".tmp-claude"
   ".tmp-cursor"
+  ".tmp-pi"
   ".tmp-opencode"
   ".tmp-gemini"
   ".tmp-agents"
 )
 
-trap 'rm -rf .tmp-claude .tmp-cursor .tmp-opencode .tmp-gemini .tmp-agents' EXIT
+trap 'rm -rf .tmp-claude .tmp-cursor .tmp-pi .tmp-opencode .tmp-gemini .tmp-agents' EXIT
 
 skill_name() {
   awk '
@@ -80,6 +81,20 @@ for client in "${clients[@]}"; do
   cp -R skills/. "$client/skills/"
   cp -R docs "$client/docs"
   verify_skill_tree "$client/skills"
+
+  help_file="$client/skills/para-help/SKILL.md"
+  grep -Fq '<!-- para-client-invocation-map:start -->' "$help_file" || {
+    echo "FAIL $help_file missing client invocation mapping start"
+    exit 1
+  }
+  grep -Fq '<!-- para-client-invocation-map:end -->' "$help_file" || {
+    echo "FAIL $help_file missing client invocation mapping end"
+    exit 1
+  }
+  grep -Fq 'Use the `para-plan` skill' "$help_file" || {
+    echo "FAIL $help_file missing natural-language fallback"
+    exit 1
+  }
 done
 
 for skill_dir in skills/*; do
@@ -88,3 +103,4 @@ for skill_dir in skills/*; do
 done
 
 echo "PASS multi-client layout compatibility"
+echo "PASS multi-client declarative invocation contract"

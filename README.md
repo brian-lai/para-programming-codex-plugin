@@ -12,32 +12,52 @@ This repository packages the methodology as open-standard Agent Skills. The skil
 
 ## Supported Clients
 
-| Client | Status | Install path | Invocation |
-|--------|--------|--------------|------------|
-| OpenAI Codex | Supported out of the box | `scripts/install.sh` installs to `~/.agents/skills` and mirrors to `~/.codex/skills` | `$para-init` or `/skills` |
-| Gemini CLI | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` | Auto-activation or `/skills list` |
-| Pi | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` | Auto-activation or `/skill:para-init` when skill commands are enabled |
-| OpenCode | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` | Loaded by OpenCode's native `skill` tool |
-| Cursor | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` | Auto-activation or slash menu, e.g. `/para-init` |
-| Claude Code | Use the Claude plugin | Use `github.com/brian-lai/para-programming-plugin` | Claude plugin commands |
+| Client | Status | Install path |
+|--------|--------|--------------|
+| OpenAI Codex | Supported out of the box | `scripts/install.sh` installs to `~/.agents/skills` and mirrors to `~/.codex/skills` |
+| Gemini CLI | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` |
+| Pi | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` |
+| OpenCode | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` |
+| Cursor | Supported out of the box | Uses the same `~/.agents/skills` install written by `scripts/install.sh` |
+| Claude Code | Use the Claude plugin | Use `github.com/brian-lai/para-programming-plugin` |
 
 For Claude Code, use the original PARA-Programming plugin: `https://github.com/brian-lai/para-programming-plugin`. This repository is the open-standard/Codex-oriented Agent Skills package.
+
+### Invocation
+
+The canonical request form is `para-<skill> [arguments]`. Client selectors are presentation syntax; if the client is unknown, name the skill and intent in natural language.
+
+<!-- para-client-invocation-map:start -->
+| Client | User-facing form |
+|---|---|
+| OpenAI Codex | `$para-<skill> [arguments]` |
+| Cursor | `/para-<skill> [arguments]` |
+| Pi, skill commands enabled | `/skill:para-<skill> [arguments]` |
+| Pi, skill commands disabled | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+| OpenCode | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+| Gemini CLI | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+| Unknown client | `natural-language` — `Use the para-<skill> skill <intent-and-arguments>.` |
+<!-- para-client-invocation-map:end -->
+
+### Management and discovery
+
+Management commands list, reload, enable, or inspect skills; they are not portable workflow invocations. Use the client-specific skill manager or debug interface to verify discovery.
 
 ## Skills
 
 | Skill | Purpose |
 |-------|---------|
-| `$para-init` | Initialize PARA structure in a project |
-| `$para-research <task>` | Deep codebase research before planning |
-| `$para-plan <task>` | Create a planning document with self-review |
-| `$para-review --plan\|--pr` | Review a plan or PR with Staff+ criteria |
-| `$para-execute` | Create a worktree and execute one checklist item per commit |
-| `$para-workflow` | Orchestrate execute, review, summarize, and merge across phases |
-| `$para-status` | Check current workflow state |
-| `$para-summarize` | Generate a post-work summary |
-| `$para-archive` | Archive context and start fresh |
-| `$para-check` | Decide whether a request needs the PARA workflow |
-| `$para-help` | Show quick reference |
+| `para-init` | Initialize PARA structure in a project |
+| `para-research <task>` | Deep codebase research before planning |
+| `para-plan <task>` | Create a planning document with self-review |
+| `para-review --plan\|--pr` | Review a plan or PR with Staff+ criteria |
+| `para-execute` | Create a worktree and execute one checklist item per commit |
+| `para-workflow` | Orchestrate execute, review, summarize, and merge across phases |
+| `para-status` | Check current workflow state |
+| `para-summarize` | Generate a post-work summary |
+| `para-archive` | Archive context and start fresh |
+| `para-check` | Decide whether a request needs the PARA workflow |
+| `para-help` | Show quick reference |
 
 ## Installation
 
@@ -79,7 +99,7 @@ These skills were generalized from the original `para-programming-plugin` comman
 
 - `CLAUDE.md` -> `AGENTS.md`
 - `~/.claude/` -> `~/.agents/`
-- `/para:command` -> `$para-command` skill mention
+- Client-specific commands -> portable `para-command` skill identifiers
 - `commands/*.md` -> `skills/para-*/SKILL.md`
 
 ## License
